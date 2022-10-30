@@ -552,25 +552,6 @@ class system {
 							$cmd .= 'echo ' . $count . ' > ' . $progress_file . "\n";
 						}
 						break;
-					case 'pip3':
-						$cmd_cleaning_pip =  'RESULTTODELETE=$(find /usr/local/lib/python*/dist-packages/ -mindepth 1 -maxdepth 1 -type d -exec du -ks {} + | awk \'$1 <= 4\' | cut -f 2-);';
-						$cmd_cleaning_pip .= 'RESULTTODELETE2=$(echo "$RESULTTODELETE" | sed \'s, ,\\ ,g\'); echo "$RESULTTODELETE2" | xargs rm -rf';
-						if ($_foreground) {
-							echo shell_exec($cmd_cleaning_pip . " 2>&1");
-							echo shell_exec(self::getCmdSudo() . " pip3 cache purge 2>&1");
-							echo shell_exec(self::getCmdSudo() . " pip3 install --upgrade pip 2>&1");
-						} else {
-							$cmd .= $cmd_cleaning_pip . "\n";
-							$count++;
-							$cmd .= 'echo ' . $count . ' > ' . $progress_file . "\n";
-							$cmd .= self::getCmdSudo() . " pip3 cache purge\n";
-							$count++;
-							$cmd .= 'echo ' . $count . ' > ' . $progress_file . "\n";
-							$cmd .= self::getCmdSudo() . " pip3 install --upgrade pip\n";
-							$count++;
-							$cmd .= 'echo ' . $count . ' > ' . $progress_file . "\n";
-						}
-						break;
 					case 'npm':
 						if ($_foreground) {
 							echo shell_exec(self::getCmdSudo() . ' chmod +x ' . __DIR__ . '/../../resources/install_nodejs.sh;' . self::getCmdSudo() . ' ' . __DIR__ . '/../../resources/install_nodejs.sh');
@@ -695,12 +676,12 @@ class system {
 				if (version_compare(self::getOsVersion(), '11', '>=')) {
 					return '';
 				}
-				return self::getCmdSudo() . ' pip2 install --force-reinstall --upgrade ' . $_package;
+				return self::getCmdSudo() . ' pip2 install --upgrade ' . $_package;
 			case 'pip3':
 				if ($_version != '') {
 					$_package .= '==' . $_version;
 				}
-				return self::getCmdSudo() . ' pip3 install --force-reinstall --upgrade ' . $_package;
+				return self::getCmdSudo() . ' pip3 install --upgrade ' . $_package;
 			case 'npm':
 				if (strpos($_package, '/') === false) {
 					return self::getCmdSudo() . ' npm install --force -g ' . $_package;
